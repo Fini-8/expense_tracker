@@ -1,4 +1,4 @@
-// src/screens/StatsScreen.js
+// src/screens/StatsScreen.tsx
 import React, { useMemo } from 'react';
 import { View, Text, Dimensions, ScrollView } from 'react-native';
 import { useExpenses } from '../context/ExpenseContext';
@@ -19,10 +19,13 @@ export default function StatsScreen() {
   const { expenses } = useExpenses();
 
   const chartData = useMemo(() => {
-    const map = {};
+    // Fix: Use Record<string, number> for better TypeScript typing
+    const map: Record<string, number> = {};
 
     expenses.forEach((e) => {
-      if (!map[e.category]) map[e.category] = 0;
+      if (!map[e.category]) {
+        map[e.category] = 0;
+      }
       map[e.category] += Number(e.amount || 0);
     });
 

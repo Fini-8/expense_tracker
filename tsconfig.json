@@ -14,5 +14,5 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "nativewind-env.d.ts"
-  ]
+, "app/src/utils/storage.tsx", "app/src/context/ExpenseContext.tsx"  ]
 }
