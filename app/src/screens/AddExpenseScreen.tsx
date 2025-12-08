@@ -1,5 +1,6 @@
+// src/screens/AddExpenseScreen.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Alert, Pressable, ScrollView } from 'react-native';
 import { useExpenses } from '../context/ExpenseContext';
 
 const CATEGORIES = ['Food', 'Travel', 'Shopping', 'Other'];
@@ -32,46 +33,66 @@ export default function AddExpenseScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>Title</Text>
+    <ScrollView
+      className="flex-1 bg-white"
+      contentContainerStyle={{ padding: 16 }}
+      keyboardShouldPersistTaps="handled"
+    >
+      <Text className="mb-1 text-sm font-medium text-slate-700">Title</Text>
       <TextInput
-        style={styles.input}
+        className="mb-3 rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900"
         placeholder="e.g., Zomato Order"
         value={title}
         onChangeText={setTitle}
+        placeholderTextColor="#9ca3af"
       />
 
-      <Text style={styles.label}>Amount</Text>
+      <Text className="mb-1 text-sm font-medium text-slate-700">Amount</Text>
       <TextInput
-        style={styles.input}
+        className="mb-3 rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900"
         placeholder="e.g., 250"
         keyboardType="numeric"
         value={amount}
         onChangeText={setAmount}
+        placeholderTextColor="#9ca3af"
       />
 
-      <Text style={styles.label}>Category</Text>
-      {/* For now simple text input; later you can make a dropdown */}
-      <TextInput
-        style={styles.input}
-        value={category}
-        onChangeText={setCategory}
-      />
+      <Text className="mb-1 text-sm font-medium text-slate-700">Category</Text>
+      <View className="mb-4 flex-row flex-wrap gap-2">
+        {CATEGORIES.map((cat) => {
+          const selected = cat === category;
+          return (
+            <Pressable
+              key={cat}
+              onPress={() => setCategory(cat)}
+              className={`rounded-full px-4 py-2 border ${
+                selected
+                  ? 'bg-indigo-600 border-indigo-600'
+                  : 'bg-slate-100 border-slate-300'
+              }`}
+            >
+              <Text
+                className={
+                  selected
+                    ? 'text-xs font-semibold text-white'
+                    : 'text-xs font-medium text-slate-700'
+                }
+              >
+                {cat}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
 
-      <Button title="Add Expense" onPress={handleAdd} />
-    </View>
+      <Pressable
+        onPress={handleAdd}
+        className="mt-2 items-center justify-center rounded-2xl bg-emerald-600 py-3"
+      >
+        <Text className="text-sm font-semibold text-white">
+          Add Expense
+        </Text>
+      </Pressable>
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, gap: 8 },
-  label: { fontSize: 14, fontWeight: '500' },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    marginBottom: 8,
-  },
-});

@@ -1,11 +1,19 @@
+// src/screens/StatsScreen.js
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
+import { View, Text, Dimensions, ScrollView } from 'react-native';
 import { useExpenses } from '../context/ExpenseContext';
 import { PieChart } from 'react-native-chart-kit';
 
 const screenWidth = Dimensions.get('window').width;
 
-const COLORS = ['#4c6fff', '#ff6b6b', '#f7b733', '#20bf6b', '#9b59b6', '#e84393'];
+const COLORS = [
+  '#4c6fff',
+  '#ff6b6b',
+  '#f7b733',
+  '#20bf6b',
+  '#9b59b6',
+  '#e84393',
+];
 
 export default function StatsScreen() {
   const { expenses } = useExpenses();
@@ -25,26 +33,33 @@ export default function StatsScreen() {
       name: cat,
       amount: map[cat],
       color: COLORS[index % COLORS.length],
-      legendFontColor: '#333',
-      legendFontSize: 14,
+      legendFontColor: '#111827',
+      legendFontSize: 13,
     }));
   }, [expenses]);
 
   if (chartData.length === 0) {
     return (
-      <View style={styles.center}>
-        <Text>No data yet. Add some expenses!</Text>
+      <View className="flex-1 items-center justify-center bg-white">
+        <Text className="text-sm text-slate-500">
+          No data yet. Add some expenses!
+        </Text>
       </View>
     );
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Spending by Category</Text>
+    <ScrollView
+      className="flex-1 bg-white"
+      contentContainerStyle={{ padding: 16, alignItems: 'center' }}
+    >
+      <Text className="mb-4 text-lg font-semibold text-slate-900">
+        Spending by Category
+      </Text>
 
       <PieChart
         data={chartData}
-        width={screenWidth - 32}   // screen width minus padding
+        width={screenWidth - 32}
         height={260}
         accessor="amount"
         backgroundColor="transparent"
@@ -59,13 +74,18 @@ export default function StatsScreen() {
         absolute
       />
 
-      <View style={styles.legendContainer}>
+      {/* Legend */}
+      <View className="mt-6 w-full">
         {chartData.map((item) => (
-          <View key={item.name} style={styles.legendItem}>
+          <View
+            key={item.name}
+            className="mb-2 flex-row items-center"
+          >
             <View
-              style={[styles.legendColor, { backgroundColor: item.color }]}
+              className="mr-2 h-4 w-4 rounded"
+              style={{ backgroundColor: item.color }}
             />
-            <Text style={styles.legendText}>
+            <Text className="text-sm text-slate-800">
               {item.name}: ₹{item.amount}
             </Text>
           </View>
@@ -74,30 +94,3 @@ export default function StatsScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    alignItems: 'center',
-  },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  title: { fontSize: 18, fontWeight: '600', marginBottom: 16 },
-  legendContainer: {
-    marginTop: 24,
-    alignSelf: 'stretch',
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  legendColor: {
-    width: 16,
-    height: 16,
-    borderRadius: 4,
-    marginRight: 8,
-  },
-  legendText: {
-    fontSize: 14,
-  },
-});
