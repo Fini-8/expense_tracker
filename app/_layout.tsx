@@ -3,6 +3,7 @@ import { Tabs } from 'expo-router';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ExpenseProvider } from '../src/context/ExpenseContext';
 import { Ionicons } from '@expo/vector-icons';
+import '../global.css'
 
 
 function TabLayout() {
