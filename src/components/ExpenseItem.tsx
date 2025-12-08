@@ -1,8 +1,7 @@
-// src/components/ExpenseItem.tsx
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-// keep this in sync with your Expense type in context
 export interface Expense {
   id: string;
   title: string;
@@ -13,13 +12,12 @@ export interface Expense {
 
 interface ExpenseItemProps {
   item: Expense;
+  onEdit: () => void;
+  onDelete: () => void;
 }
 
-const ExpenseItem: React.FC<ExpenseItemProps> = ({ item }) => {
-  // safety check – avoids crash if something is wrong in data
-  if (!item) {
-    return null;
-  }
+const ExpenseItem: React.FC<ExpenseItemProps> = ({ item, onEdit, onDelete }) => {
+  if (!item) return null;
 
   return (
     <View className="mb-2 flex-row items-center justify-between rounded-xl bg-slate-100 px-4 py-3">
@@ -31,9 +29,20 @@ const ExpenseItem: React.FC<ExpenseItemProps> = ({ item }) => {
           {item.category} • {item.date}
         </Text>
       </View>
-      <Text className="text-base font-bold text-emerald-600">
-        ₹{item.amount}
-      </Text>
+
+      <View className="flex-row items-center">
+        <Text className="text-base font-bold text-emerald-600">
+          ₹{item.amount}
+        </Text>
+
+        <Pressable onPress={onEdit} className="ml-3">
+          <Ionicons name="create-outline" size={18} color="#4b5563" />
+        </Pressable>
+
+        <Pressable onPress={onDelete} className="ml-2">
+          <Ionicons name="trash-outline" size={18} color="#dc2626" />
+        </Pressable>
+      </View>
     </View>
   );
 };

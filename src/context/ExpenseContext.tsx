@@ -15,8 +15,10 @@ interface ExpenseContextType {
   expenses: Expense[];
   addExpense: (expense: Expense) => void;
   deleteExpense: (id: string) => void;
+  updateExpense: (id: string, updates: Partial<Expense>) => void; 
   loading: boolean;
 }
+
 
 // Create context with proper typing
 const ExpenseContext = createContext<ExpenseContextType | undefined>(undefined);
@@ -31,6 +33,13 @@ interface ExpenseProviderProps {
 export function ExpenseProvider({ children }: ExpenseProviderProps) {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
+
+// 👇 new
+const updateExpense = (id: string, updates: Partial<Expense>) =>
+  setExpenses((prev) =>
+    prev.map((e) => (e.id === id ? { ...e, ...updates } : e))
+  );
+
 
   useEffect(() => {
     const loadExpenses = async () => {
@@ -75,6 +84,7 @@ export function ExpenseProvider({ children }: ExpenseProviderProps) {
     expenses,
     addExpense,
     deleteExpense,
+    updateExpense, 
     loading
   };
 

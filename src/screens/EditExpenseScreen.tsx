@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ScrollView,
   Text,
@@ -7,44 +7,65 @@ import {
   Alert,
 } from 'react-native';
 import { useExpenses } from '../context/ExpenseContext';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 const CATEGORIES = ['Food', 'Travel', 'Shopping', 'Other'];
 
-export default function AddExpenseScreen() {
-  const { addExpense } = useExpenses();
+export default function EditExpenseScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { expenses, updateExpense } = useExpenses();
+
+  const existingExpense = useMemo(
+    () => expenses.find(e => e.id === id),
+    [expenses, id],
+  );
 
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('Food');
 
-  const handleAdd = () => {
+  useEffect(() => {
+    if (existingExpense) {
+      setTitle(existingExpense.title);
+      setAmount(String(existingExpense.amount));
+      setCategory(existingExpense.category);
+    }
+  }, [existingExpense]);
+
+  const handleSave = () => {
+    if (!id || !existingExpense) {
+      Alert.alert('Error', 'Expense not found');
+      return;
+    }
+
     if (!title || !amount) {
       Alert.alert('Missing fields', 'Please enter title and amount');
       return;
     }
 
-    const newExpense = {
-      id: Date.now().toString(),
+    updateExpense(id, {
       title,
       amount: Number(amount),
       category,
-      date: new Date().toISOString().slice(0, 10), // YYYY-MM-DD
-    };
+    });
 
-    addExpense(newExpense);
-
-    // reset fields
-    setTitle('');
-    setAmount('');
-    setCategory('Food');
-
-    Alert.alert('Added', 'Expense added successfully');
-
-    // optional: go back to Home after adding
-    router.push('/');
+    Alert.alert('Updated', 'Expense updated successfully');
+    router.back();
   };
+
+  if (!existingExpense) {
+    return (
+      <ScrollView
+        className="flex-1 bg-white"
+        contentContainerStyle={{ padding: 16 }}
+      >
+        <Text className="text-sm text-red-500">
+          Expense not found.
+        </Text>
+      </ScrollView>
+    );
+  }
 
   return (
     <ScrollView
@@ -53,13 +74,12 @@ export default function AddExpenseScreen() {
       keyboardShouldPersistTaps="handled"
     >
       <Text className="mb-4 text-lg font-semibold text-slate-900">
-        Add Expense
+        Edit Expense
       </Text>
 
       <Text className="mb-1 text-sm font-medium text-slate-700">Title</Text>
       <TextInput
         className="mb-3 rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900"
-        placeholder="e.g., Zomato Order"
         value={title}
         onChangeText={setTitle}
         placeholderTextColor="#9ca3af"
@@ -68,7 +88,6 @@ export default function AddExpenseScreen() {
       <Text className="mb-1 text-sm font-medium text-slate-700">Amount</Text>
       <TextInput
         className="mb-3 rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900"
-        placeholder="e.g., 250"
         keyboardType="numeric"
         value={amount}
         onChangeText={setAmount}
@@ -108,11 +127,11 @@ export default function AddExpenseScreen() {
       </ScrollView>
 
       <Pressable
-        onPress={handleAdd}
+        onPress={handleSave}
         className="mt-2 items-center justify-center rounded-2xl bg-emerald-600 py-3"
       >
         <Text className="text-sm font-semibold text-white">
-          Add Expense
+          Save Changes
         </Text>
       </Pressable>
     </ScrollView>

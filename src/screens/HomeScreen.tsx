@@ -1,11 +1,13 @@
-// src/screens/HomeScreen.tsx
 import React, { useMemo } from 'react';
-import { View, Text, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, Alert } from 'react-native';
 import { useExpenses } from '../context/ExpenseContext';
 import ExpenseItem, { Expense } from '../components/ExpenseItem';
+import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
-  const { expenses, loading } = useExpenses();
+  const { expenses, loading, deleteExpense } = useExpenses();
+  const router = useRouter();
+  
 
   const currentMonthTotal = useMemo(() => {
     const now = new Date();
@@ -21,11 +23,28 @@ export default function HomeScreen() {
       .reduce((sum, e) => sum + Number(e.amount || 0), 0);
   }, [expenses]);
 
-  // clean data just in case something undefined got stored
   const cleanedExpenses: Expense[] = useMemo(
     () => expenses.filter((e): e is Expense => !!e && typeof e === 'object'),
     [expenses]
   );
+
+  const handleDelete = (id: string) => {
+    Alert.alert('Delete expense', 'Are you sure you want to delete this item?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => deleteExpense(id),
+      },
+    ]);
+  };
+
+ const handleEdit = (id: string) => {
+ router.push({
+  pathname: '/edit/[id]',
+  params: { id },
+});
+};
 
   if (loading) {
     return (
@@ -53,7 +72,15 @@ export default function HomeScreen() {
       <FlatList
         data={cleanedExpenses}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <ExpenseItem item={item} />}
+       renderItem={({ item }) => (
+  <ExpenseItem
+    item={item}
+    onEdit={() => handleEdit(item.id)}
+    onDelete={() => handleDelete(item.id)}
+  />
+)}
+
+        
         ListEmptyComponent={
           <Text className="mt-4 text-sm text-slate-500">
             No expenses yet. Add your first one on the Add tab.
