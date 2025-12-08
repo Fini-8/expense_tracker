@@ -2,7 +2,7 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { ExpenseProvider } from './src/context/ExpenseContext';
+import { ExpenseProvider } from '../src/context/ExpenseContext';
 import "../global.css"
 import 'expo-router/entry'
 
